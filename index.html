@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A* Search</title>
+  <link rel="stylesheet" href="scripts/styles.css">
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src='https://unpkg.com/babel-standalone@6/babel.min.js'></script>
+</head>
+<body>
+  <div id='app'></div>
+  <script type='text/babel'> // p = props, s = state, f = functions
+    function Wrap(p) {
+      return (
+        <div>
+          {Maze(p)}
+          {Palette(p)}
+        </div>
+      )
+    }
+    function Maze(p) {
+      let rows = [];
+      for (let i = 0; i < p.s.height; i++) {
+        rows.push(Row(p, i))
+      }
+      return (
+        <table className="maze">
+          <tbody>
+            {rows}
+          </tbody>
+        </table>
+      )
+    }
+    function Row(p, row) {
+      let cells = [];
+      for (let j = 0; j < p.s.width; j++) {
+        cells.push(Cell(p, row, j))
+      }
+      return (
+        <tr>
+          {cells}
+        </tr>
+      )
+    }
+    function Cell(p, row, col) {
+      return (
+        <td className = 'square' onClick={() => {p.f.fill(row, col)}}>
+          <img src={`./media/${p.s.layout[row][col]}.png`}/>  
+        </td>
+      )
+    }
+    function Palette(p) {
+      return (
+        <div className = 'palette'>
+          <table className = 'palette'>
+            <tbody>
+            {PaintPot(p, 'penguin')}
+            {PaintPot(p, 'igloo')}
+            {PaintPot(p, 'tree')}
+            {PaintPot(p, 'blank')}
+            </tbody>
+          </table>
+          {Solver(p)}
+        </div>
+      )
+    }
+    function PaintPot(p, pattern) {
+      return (
+        <td onClick={() => p.f.changeBrush(pattern)}>
+          <img src={`./media/${pattern}.png`}/>  
+        </td>
+      )
+    }
+    function Solver(p) {
+      return (
+        <div className = 'palette'>
+          <button onClick={() => p.f.solve()}> Take me home!</button>
+        </div>
+      )
+    }
+    class App extends React.Component {
+      constructor(p) {
+        super(p);
+        this.Fill = this.Fill.bind(this);
+        this.ChangeBrush = this.ChangeBrush.bind(this);
+        this.Solve = this.Solve.bind(this);
+        this.state = {
+          brush: 'blank',
+          width: 5,
+          height: 5,
+          layout: [
+            ['blank', 'blank', 'blank', 'blank', 'blank'],
+            ['blank', 'blank', 'blank', 'blank', 'blank'],
+            ['blank', 'blank', 'blank', 'blank', 'blank'],
+            ['blank', 'blank', 'blank', 'blank', 'blank'],
+            ['blank', 'blank', 'blank', 'blank', 'blank'],
+          ]
+        }
+      }
+      Fill(row, col) {
+        console.log(`filling ${row}, ${col} with pattern ${this.state.brush}`)
+        this.setState((currentState) => {
+          if (currentState.brush == 'penguin' || currentState.brush == 'igloo') {
+            currentState.layout.forEach((row, rowNum) => {
+              row.forEach((col, colNum) => {
+                if (col == currentState.brush) {
+                  currentState.layout[rowNum][colNum] = 'blank';
+                }
+              })
+            })
+          }
+          currentState.layout[row][col] = this.state.brush;
+          return {
+            layout: currentState.layout
+          }
+        })
+      }
+      ChangeBrush(pattern) {
+        console.log(`Changing brush to pattern ${pattern}`)
+        this.setState((currentState) => {
+          return {
+            brush: pattern
+          }
+        })
+      }
+      Solve() {
+        let solution = 0;
+        let r = 0;
+        let c = 0;
+        let startR = 0;
+        let startC = 0;
+        let w = 5;
+        let h = 5;
+        let R = 0;
+        let C = 0;
+        let maze = this.state.layout;
+        this.state.layout.forEach((row, rowIndex) => {
+          row.forEach((col, colIndex) => {
+            if (col == 'penguin') {
+              r = rowIndex;
+              c = colIndex;
+              startR = rowIndex.valueOf();
+              startC = colIndex.valueOf();
+            }
+            if (col == 'igloo') {
+              R = rowIndex;
+              C = colIndex;
+            }
+          })
+        })
+        console.log(`Finding path from (${c}, ${r}) to (${C}, ${R})`)
+        let queue = [];
+        let closed = [];
+        let found = false;
+        const dirs = {
+          U: [-1, 0],
+          R: [0, 1],
+          D: [1, 0],
+          L: [0, -1]
+        };
+        class Node {
+          constructor(route, y, x) {
+            this.route = route;
+            this.y = y;
+            this.x = x;
+            this.dist = route.length;
+            this.f = this.dist + Math.sqrt(Math.pow(C - x, 2) + Math.pow(R - y, 2));
+            }
+          }
+        queue.push(new Node('', r, c))
+        while (!found) {
+          let currentNode = queue[0];
+          queue.forEach(node => {
+            if (node.f < currentNode.f) {
+              currentNode = node;
+            }
+          });
+          for (let dir in dirs) {
+            r = currentNode.y;
+            c = currentNode.x;
+            r+= dirs[dir][0];
+            c+= dirs[dir][1];
+            if (r < h && c < w && r >= 0 && c >= 0) {
+              if (maze[r][c] != 'tree') {
+                if (r == R && c == C) {
+                  solution = currentNode.route.concat(dir);
+                  console.log(`route found! ${solution}`)
+                  found = true;
+                }
+                if(!queue.some(node => node.y == r && node.x == c) && !closed.some(node => node.y == r && node.x == c)) {
+                  queue.push(new Node(currentNode.route.concat(dir), r, c))
+                }
+              }
+            }
+          }
+          closed.push(currentNode);
+          queue.shift()
+        }
+        r = startR;
+        c = startC;
+        solution.split('').forEach(move => {
+          this.setState((currentState) => {
+            currentState.layout[r][c] = move;
+            r+= dirs[move][0];
+            c+= dirs[move][1];
+            currentState.layout[r][c] = 'penguin';
+            return {
+              layout: currentState.layout
+            }
+          })
+        })
+      }
+      render() {
+        return (
+          <Wrap
+            s = {this.state}
+            f = {{
+              fill: this.Fill,
+              changeBrush: this.ChangeBrush,
+              solve: this.Solve
+            }}/>
+        )
+      }
+    };
+    ReactDOM.render(
+      <App />,
+      document.getElementById('app')
+    )
+  </script>
+</body>
+</html>

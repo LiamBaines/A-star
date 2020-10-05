@@ -1,0 +1,65 @@
+table {
+  border-spacing: 0px;
+}
+
+.maze {
+  position: relative;
+  margin: 50px auto;
+	width: 400px;
+  height: 400px;
+  border-collapse: separate;
+  border-spacing: 0px;  
+}
+
+.maze table {
+  background-image: './media/blank.png'
+}
+
+.maze td {
+  border: 0px;
+  padding: 0px;
+  height: 80px;
+}
+
+.maze tr {
+  border: 0px;
+  padding: 0px;
+}
+
+.maze img {
+  height: 80px;
+  width: 80px;
+}
+
+.palette {
+  position: relative;
+  border-spacing: 0px;  
+  position: relative;
+  margin: 10px auto;
+}
+
+.palette div {
+  width: 200px;
+  position: relative;
+  margin: auto;
+  border-spacing: 0;
+  display: block;
+}
+
+.palette td {
+  width: 40px;
+  height: 40px;
+  border: solid black 1px;
+}
+
+.palette img {
+  height: 38px;
+  width: 38px;
+}
+
+.palette button {
+  width: 200px;
+  position: relative;
+  margin: auto;
+  border-spacing: 0;
+}
