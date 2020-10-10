@@ -35,7 +35,7 @@ function Astar (maze, r, c, R, C) {
       r+= dirs[dir][0];
       c+= dirs[dir][1];
       if (r < h && c < w && r >= 0 && c >= 0) {
-        if (maze[r][c] != 'tree') {
+        if (maze[r][c] != 'iceberg') {
           if (r == R && c == C) {
             console.log(`route found! ${rte.concat(dir)}`)
             console.log(queue.length)

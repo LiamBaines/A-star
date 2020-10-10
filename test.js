@@ -1,25 +1,11 @@
-let perms = [];
+let width = 5;
+let height = 5;
 
-function add(left, right) {
-  if (left.length === 0) {
-    perms.push(right);
-  } else {
-    left.forEach((element, index) => {
-      let newLeft = left.slice()
-      let newRight = right.slice()
-      newRight.push(newLeft.splice(index, 1)[0])
-      add(newLeft, newRight, left.length - 1)
-    });
-  }
+let grid = []
+for (i = 0; i < height; i ++) {
+  let row = new Array(width);
+  row.fill('water')
+  grid.push(row)
 }
 
-function all(arr) {
-  console.log(perms)
-  add(arr.slice(), [], arr.length)
-  console.log(perms)
-}
-
-let arr = [0, 1, 2, 3, 4]
-
-arr.splice(3, 1)
-console.log(arr)
+console.log(grid)
