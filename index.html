@@ -98,7 +98,7 @@
         }
       }
       Fill(row, col) {
-        console.log(`filling ${row}, ${col} with pattern ${this.state.brush}`)
+        //console.log(`filling ${row}, ${col} with pattern ${this.state.brush}`)
         this.setState((currentState) => {
           if (currentState.brush == 'penguin' || currentState.brush == 'igloo') {
             currentState.layout.forEach((row, rowNum) => {
@@ -116,7 +116,7 @@
         })
       }
       ChangeBrush(pattern) {
-        console.log(`Changing brush to pattern ${pattern}`)
+        //console.log(`Changing brush to pattern ${pattern}`)
         this.setState((currentState) => {
           return {
             brush: pattern
@@ -193,8 +193,9 @@
               }
             }
           }
+          let n = queue.indexOf(currentNode).valueOf();
           closed.push(currentNode);
-          queue.shift()
+          queue.splice(n, 1)
         }
         r = startR;
         c = startC;

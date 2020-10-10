@@ -19,7 +19,7 @@ function all(arr) {
   console.log(perms)
 }
 
-let arr = [1, 2, 3]
+let arr = [0, 1, 2, 3, 4]
 
-all(arr)
-
+arr.splice(3, 1)
+console.log(arr)
