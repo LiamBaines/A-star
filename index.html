@@ -120,26 +120,15 @@
       Fill(row, col) {
         //console.log(`filling ${row}, ${col} with pattern ${this.state.brush}`)
         this.setState((currentState) => {
-          if (currentState.brush == 'boat' || currentState.brush == 'boatfinal' || currentState.brush == 'treasure') {
-            currentState.layout.forEach((row, rowNum) => {
-              row.forEach((col, colNum) => {
-                if (col == 'boat' && currentState.brush == 'boat') {
-                  currentState.layout[rowNum][colNum] = 'water';
-                } else if (col == 'boatfinal' && currentState.brush == 'boat') {
-                  currentState.layout.forEach((row2, rowNum2) => {
-                    row2.forEach((col2, colNum2) => {
-                      if (col2 == 'trail' || col2 == 'boatfinal') currentState.layout[rowNum2][colNum2] = 'water'
-                    })
-                  })
-                } else if ((col == 'treasure' || col == 'trail') && currentState.brush == 'treasure') {
-                  currentState.layout[rowNum][colNum] = 'water'
-                } else if (col == 'boatfinal' && currentState.brush == 'treasure') {
-                  currentState.layout[rowNum][colNum] = 'boat'
-                }
-              })
+          currentState.layout.forEach((row, rowNum) => {
+            row.forEach((col, colNum) => {
+              if ((currentState.brush == 'boat' || currentState.brush == 'treasure') && col == currentState.brush) currentState.layout[rowNum][colNum] = 'water';
+              if (col == 'trail') currentState.layout[rowNum][colNum] = 'water';
+              if (col == 'boatfinal') currentState.layout[rowNum][colNum] = 'boat';
             })
-          }
+          })
           currentState.layout[row][col] = this.state.brush;
+          console.log(currentState.layout)
           return {
             layout: currentState.layout
           }
