@@ -2,33 +2,33 @@ table {
   border-spacing: 0px;
 }
 
+p {
+  font-family: Arial;
+  font-size: 12px;
+}
+
 .maze {
   position: relative;
   margin: 50px auto;
-	width: 400px;
-  height: 400px;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0px;  
 }
 
 .maze table {
-  background-image: './media/blank.png'
+  background-image: './media/water.png'
+  
 }
 
 .maze td {
-  border: 0px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
   padding: 0px;
-  height: 80px;
 }
 
 .maze tr {
   border: 0px;
   padding: 0px;
-}
-
-.maze img {
-  height: 80px;
-  width: 80px;
 }
 
 .palette {
@@ -59,7 +59,36 @@ table {
 
 .palette button {
   width: 200px;
+  height: 40px;
   position: relative;
   margin: auto;
   border-spacing: 0;
+}
+
+.resizer {
+  position: relative;
+  border-spacing: 0px;  
+  position: relative;
+  margin: 10px auto;
+  border-collapse: collapse;
+}
+.resizer tr {
+  height: 10px;
+}
+
+.resizer td {
+  border-width: 0px;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+}
+.resizer p {
+  margin: 0px;
+  text-align: center;
+}
+
+.resizer button {
+  width: 25px;
+  height: 25px;
+  text-align: center;
 }

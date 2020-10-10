@@ -24,7 +24,7 @@
         rows.push(Row(p, i))
       }
       return (
-        <table className="maze">
+        <table className="maze" style={{width: p.s.pxWidth, height: p.s.pxHeight}}>
           <tbody>
             {rows}
           </tbody>
@@ -43,9 +43,9 @@
       )
     }
     function Cell(p, row, col) {
+      //<img src={`./media/${p.s.layout[row][col]}.png`} style={{width: p.s.cellSize, height: p.s.cellSize}}/> 
       return (
-        <td className = 'square' onClick={() => {p.f.fill(row, col)}}>
-          <img src={`./media/${p.s.layout[row][col]}.png`}/>  
+        <td className='square' style={{width: p.s.cellSize, height: p.s.cellSize, backgroundSize: 'contain'}} background={`./media/${p.s.layout[row][col]}.png`} onClick={() => {p.f.fill(row, col)}}>
         </td>
       )
     }
@@ -54,28 +54,44 @@
         <div className = 'palette'>
           <table className = 'palette'>
             <tbody>
-            {PaintPot(p, 'penguin')}
-            {PaintPot(p, 'igloo')}
-            {PaintPot(p, 'tree')}
-            {PaintPot(p, 'blank')}
+            {PaintPot(p, 'boat')}
+            {PaintPot(p, 'treasure')}
+            {PaintPot(p, 'iceberg')}
+            {PaintPot(p, 'water')}
             </tbody>
           </table>
           {Solver(p)}
+          {Resizer(p)}
         </div>
       )
     }
     function PaintPot(p, pattern) {
       return (
-        <td onClick={() => p.f.changeBrush(pattern)}>
-          <img src={`./media/${pattern}.png`}/>  
+        <td onClick={() => p.f.changeBrush(pattern)} style={{backgroundSize: 'contain'}} background={`./media/${pattern}.png`}>
         </td>
       )
     }
     function Solver(p) {
       return (
         <div className = 'palette'>
-          <button onClick={() => p.f.solve()}> Take me home!</button>
+          <button onClick={() => p.f.solve()}> Take me to the loot!</button>
         </div>
+      )
+    }
+    function Resizer(p) {
+      return (
+        <table className = 'resizer'>
+          <tr>
+            <td><button onClick={() => p.f.resize(0, -1)}>-</button></td>
+            <td><p>Height</p></td>
+            <td><button onClick={() => p.f.resize(0, 1)}>+</button></td>
+          </tr>
+          <tr>
+            <td><button onClick={() => p.f.resize(-1, 0)}>-</button></td>
+            <td><p>Width</p></td>
+            <td><button onClick={() => p.f.resize(1, 0)}>+</button></td>
+          </tr>
+        </table>
       )
     }
     class App extends React.Component {
@@ -84,27 +100,39 @@
         this.Fill = this.Fill.bind(this);
         this.ChangeBrush = this.ChangeBrush.bind(this);
         this.Solve = this.Solve.bind(this);
+        this.Resize = this.Resize.bind(this);
         this.state = {
-          brush: 'blank',
+          brush: 'water',
           width: 5,
           height: 5,
+          pxWidth: '400px',
+          pxHeight: '400px',
+          cellSize: '80px',
           layout: [
-            ['blank', 'blank', 'blank', 'blank', 'blank'],
-            ['blank', 'blank', 'blank', 'blank', 'blank'],
-            ['blank', 'blank', 'blank', 'blank', 'blank'],
-            ['blank', 'blank', 'blank', 'blank', 'blank'],
-            ['blank', 'blank', 'blank', 'blank', 'blank'],
-          ]
+            ['water', 'water', 'water', 'water', 'water'],
+            ['water', 'water', 'water', 'water', 'water'],
+            ['water', 'water', 'water', 'water', 'water'],
+            ['water', 'water', 'water', 'water', 'water'],
+            ['water', 'water', 'water', 'water', 'water'],
+          ],
         }
       }
       Fill(row, col) {
         //console.log(`filling ${row}, ${col} with pattern ${this.state.brush}`)
         this.setState((currentState) => {
-          if (currentState.brush == 'penguin' || currentState.brush == 'igloo') {
+          if (currentState.brush == 'boat' || currentState.brush == 'boatfinal' || currentState.brush == 'treasure') {
             currentState.layout.forEach((row, rowNum) => {
               row.forEach((col, colNum) => {
-                if (col == currentState.brush) {
-                  currentState.layout[rowNum][colNum] = 'blank';
+                if (col == 'boat' && currentState.brush == 'boat') {
+                  currentState.layout[rowNum][colNum] = 'water';
+                } else if (col == 'boatfinal' && currentState.brush == 'boat') {
+                  currentState.layout.forEach((row2, rowNum2) => {
+                    row2.forEach((col2, colNum2) => {
+                      if (col2 == 'trail' || col2 == 'boatfinal') currentState.layout[rowNum2][colNum2] = 'water'
+                    })
+                  })
+                } else if (col == 'treasure' && currentState.brush == 'treasure') {
+                  currentState.layout[rowNum][colNum] = 'water'
                 }
               })
             })
@@ -123,26 +151,55 @@
           }
         })
       }
+      Resize(widthChange, heightChange) {
+        this.setState((currentState) => {
+          let newWidth = currentState.width + widthChange;
+          let newHeight = currentState.height + heightChange;
+          let newCellSize = 400/newHeight;
+          let newLayout = [];
+          for (let i = 0; i < newHeight; i ++) {
+            let row = new Array(newWidth);
+            row.fill('water')
+            newLayout.push(row)
+          }
+          console.log(`newLayout initialised`)
+          console.log(`width = (${currentState.width} => ${newWidth}), height = (${currentState.height} => ${newHeight})`)
+          currentState.layout.forEach((row, rowNum) => {
+            row.forEach((col, colNum) => {
+              console.log(`@ currentState[${rowNum}][${colNum}] / newWidth = ${newWidth}, newHeight = ${newHeight}`)
+              if (rowNum < newHeight && colNum < newWidth) newLayout[rowNum][colNum] = col;
+            })
+          })  
+          return {
+            width: newWidth,
+            height: newHeight,
+            layout: newLayout,
+            cellSize: newCellSize,
+            pxWidth: newCellSize * newWidth,
+            pxHeight: newCellSize * newHeight
+          }
+        });
+      }
       Solve() {
         let solution = 0;
         let r = 0;
         let c = 0;
         let startR = 0;
         let startC = 0;
-        let w = 5;
-        let h = 5;
+        let w = this.state.width;
+        let h = this.state.height;
         let R = 0;
         let C = 0;
         let maze = this.state.layout;
         this.state.layout.forEach((row, rowIndex) => {
           row.forEach((col, colIndex) => {
-            if (col == 'penguin') {
+            if (col == 'boat' || col == 'boatfinal') {
               r = rowIndex;
               c = colIndex;
               startR = rowIndex.valueOf();
               startC = colIndex.valueOf();
             }
-            if (col == 'igloo') {
+            if (col == 'treasure') {
               R = rowIndex;
               C = colIndex;
             }
@@ -181,7 +238,7 @@
             r+= dirs[dir][0];
             c+= dirs[dir][1];
             if (r < h && c < w && r >= 0 && c >= 0) {
-              if (maze[r][c] != 'tree') {
+              if (maze[r][c] != 'iceberg') {
                 if (r == R && c == C) {
                   solution = currentNode.route.concat(dir);
                   console.log(`route found! ${solution}`)
@@ -199,16 +256,23 @@
         }
         r = startR;
         c = startC;
-        solution.split('').forEach(move => {
-          this.setState((currentState) => {
-            currentState.layout[r][c] = move;
+        this.setState((currentState) => {
+          currentState.layout.forEach((row, rowNum) => {
+            row.forEach((col, colNum) => {
+              if (col == 'trail') {
+                currentState.layout[rowNum][colNum] = 'water'
+              }
+            })
+          })
+          solution.split('').forEach((move, index) => {
+            currentState.layout[r][c] = 'trail';
             r+= dirs[move][0];
             c+= dirs[move][1];
-            currentState.layout[r][c] = 'penguin';
-            return {
-              layout: currentState.layout
-            }
+            currentState.layout[r][c] = (index == solution.length) ? 'boat' : 'boatfinal';
           })
+          return {
+            layout: currentState.layout
+          }
         })
       }
       render() {
@@ -218,7 +282,8 @@
             f = {{
               fill: this.Fill,
               changeBrush: this.ChangeBrush,
-              solve: this.Solve
+              solve: this.Solve,
+              resize: this.Resize
             }}/>
         )
       }
