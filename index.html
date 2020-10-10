@@ -131,8 +131,10 @@
                       if (col2 == 'trail' || col2 == 'boatfinal') currentState.layout[rowNum2][colNum2] = 'water'
                     })
                   })
-                } else if (col == 'treasure' && currentState.brush == 'treasure') {
+                } else if ((col == 'treasure' || col == 'trail') && currentState.brush == 'treasure') {
                   currentState.layout[rowNum][colNum] = 'water'
+                } else if (col == 'boatfinal' && currentState.brush == 'treasure') {
+                  currentState.layout[rowNum][colNum] = 'boat'
                 }
               })
             })
