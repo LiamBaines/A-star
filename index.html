@@ -109,11 +109,11 @@
           pxHeight: '400px',
           cellSize: '80px',
           layout: [
+            ['boat', 'water', 'water', 'water', 'water'],
+            ['water', 'iceberg', 'water', 'water', 'water'],
             ['water', 'water', 'water', 'water', 'water'],
-            ['water', 'water', 'water', 'water', 'water'],
-            ['water', 'water', 'water', 'water', 'water'],
-            ['water', 'water', 'water', 'water', 'water'],
-            ['water', 'water', 'water', 'water', 'water'],
+            ['water', 'water', 'water', 'iceberg', 'water'],
+            ['water', 'water', 'water', 'water', 'treasure'],
           ],
         }
       }
@@ -122,9 +122,10 @@
         this.setState((currentState) => {
           currentState.layout.forEach((row, rowNum) => {
             row.forEach((col, colNum) => {
-              if ((currentState.brush == 'boat' || currentState.brush == 'treasure') && col == currentState.brush) currentState.layout[rowNum][colNum] = 'water';
+              if ((col == 'boat' || col == 'boatfinal') && currentState.brush == 'boat') currentState.layout[rowNum][colNum] = 'water';
+              if (col == 'boatfinal' && currentState.brush == 'treasure') currentState.layout[rowNum][colNum] = 'boat';
+              if (col == 'treasure' && currentState.brush == 'treasure') currentState.layout[rowNum][colNum] = 'water';
               if (col == 'trail') currentState.layout[rowNum][colNum] = 'water';
-              if (col == 'boatfinal') currentState.layout[rowNum][colNum] = 'boat';
             })
           })
           currentState.layout[row][col] = this.state.brush;
